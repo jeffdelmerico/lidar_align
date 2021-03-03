@@ -43,9 +43,10 @@ void Loader::parsePointcloudMsg(const sensor_msgs::PointCloud2 msg,
 
       if (!std::isfinite(point.x) || !std::isfinite(point.y) ||
           !std::isfinite(point.z) || !std::isfinite(point.intensity)) {
+        ROS_INFO_STREAM("Invalid point: (" << point.x << ", " << point.y << ", " << point.z << ", " << point.intensity << ")");
         continue;
       }
-
+  
       pointcloud->push_back(point);
     }
     pointcloud->header = raw_pointcloud.header;
@@ -61,6 +62,7 @@ void Loader::parsePointcloudMsg(const sensor_msgs::PointCloud2 msg,
 
       if (!std::isfinite(point.x) || !std::isfinite(point.y) ||
           !std::isfinite(point.z)) {
+        ROS_INFO_STREAM("Invalid point: (" << point.x << ", " << point.y << ", " << point.z << ")");
         continue;
       }
 
@@ -133,6 +135,16 @@ bool Loader::loadTformFromROSBag(const std::string& bag_path, Odom* odom) {
 
     Timestamp stamp = transform_msg.header.stamp.sec * 1000000ll +
                       transform_msg.header.stamp.nsec / 1000ll;
+
+    if (!std::isfinite(transform_msg.transform.translation.x) || !std::isfinite(transform_msg.transform.translation.y) ||
+        !std::isfinite(transform_msg.transform.translation.z) || !std::isfinite(transform_msg.transform.rotation.x) ||
+        !std::isfinite(transform_msg.transform.rotation.y) || !std::isfinite(transform_msg.transform.rotation.z) || 
+        !std::isfinite(transform_msg.transform.rotation.w)) {
+      ROS_INFO_STREAM("Invalid transform: (" << transform_msg.transform.translation.x << ", " << transform_msg.transform.translation.y << ", " 
+        << transform_msg.transform.translation.z << ") (" << transform_msg.transform.rotation.x << ", " << transform_msg.transform.rotation.y << 
+        ", " << transform_msg.transform.rotation.z << ", " << transform_msg.transform.rotation.w << ')');
+      continue;
+    }
 
     Transform T(Transform::Translation(transform_msg.transform.translation.x,
                                        transform_msg.transform.translation.y,
