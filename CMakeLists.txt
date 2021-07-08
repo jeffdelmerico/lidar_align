@@ -1,7 +1,8 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(lidar_align)
 
-add_definitions(-std=c++11 -ofast)
+add_definitions(-std=c++11)
+set(CMAKE_BUILD_TYPE "Release")
 
 find_package(catkin REQUIRED COMPONENTS
   roscpp
