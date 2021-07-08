@@ -39,14 +39,13 @@ float Aligner::kNNError(const pcl::KdTreeFLANN<Point>& kdtree,
   float error = 0;
   for (size_t idx = start_idx; idx < std::min(pointcloud.size(), end_idx);
        ++idx) {
-    if (!std::isfinite(pointcloud[idx].x) || !std::isfinite(pointcloud[idx].y) ||
-        !std::isfinite(pointcloud[idx].z)) {
-      continue;
-    }
-    // ROS_INFO_STREAM("nearestKSearch on: (" << pointcloud[idx].x << ", " << pointcloud[idx].y << ", " << pointcloud[idx].z << ")");
-    kdtree.nearestKSearch(pointcloud[idx], k, kdtree_idx, kdtree_dist);
-    for (const float& x : kdtree_dist) {
-      error += std::min(x, max_dist);
+    if (std::isfinite(pointcloud[idx].x) && std::isfinite(pointcloud[idx].y) &&
+        std::isfinite(pointcloud[idx].z)) {
+      // ROS_INFO_STREAM("nearestKSearch on: (" << pointcloud[idx].x << ", " << pointcloud[idx].y << ", " << pointcloud[idx].z << ")");
+      kdtree.nearestKSearch(pointcloud[idx], k, kdtree_idx, kdtree_dist);
+      for (const float& x : kdtree_dist) {
+        error += std::min(x, max_dist);
+      }
     }
   }
   return error;
